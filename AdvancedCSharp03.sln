@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33213.308
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedCSharp03", "AdvancedCSharp03\AdvancedCSharp03.csproj", "{FDD20A99-EEDA-4EA3-B918-5C50541DD479}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Arthitect.Common", "Arthitect.Common\Arthitect.Common.csproj", "{368ED477-6D42-46EE-93F5-118A0E7631E2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FDD20A99-EEDA-4EA3-B918-5C50541DD479}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FDD20A99-EEDA-4EA3-B918-5C50541DD479}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FDD20A99-EEDA-4EA3-B918-5C50541DD479}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FDD20A99-EEDA-4EA3-B918-5C50541DD479}.Release|Any CPU.Build.0 = Release|Any CPU
+		{368ED477-6D42-46EE-93F5-118A0E7631E2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{368ED477-6D42-46EE-93F5-118A0E7631E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{368ED477-6D42-46EE-93F5-118A0E7631E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{368ED477-6D42-46EE-93F5-118A0E7631E2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B3A15C59-6114-4B66-AC43-005BFDA7AECB}
+	EndGlobalSection
+EndGlobal
