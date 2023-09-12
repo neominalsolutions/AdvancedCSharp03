@@ -16,7 +16,11 @@ using AdvancedCSharp03.Models;
 using Arthitect.Common;
 using MediatR;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 
 public class Program
@@ -30,7 +34,11 @@ public class Program
     // RegexSample02();
     // DelegateSample();
     // EventDelegateSample();
-    MediatorWeatherSample();
+    // MediatorWeatherSample();
+    // StreamReaderWriterSample();
+    // FileStreamReaderWriterSample();
+    // SystemTextJsonSample();
+    NewtonSoftJSONSample();
     #endregion
   }
 
@@ -207,11 +215,157 @@ public class Program
   public static void PersonClassExtensionSample()
   {
     // sınıfın içerisinde sınıfa müdahele etmeden dışından bir extend işlemi yaptım.
-    var p = new Person();
+    var p = new Arthitect.Common.Person();
     p.Name = "Ali";
     p.SurName = "Tan";
     string fullName = p.GetFullName();
   }
+
+
+  // Stream => Dosya okuma yazma işlemleri için geliştirilmiş. Boyutu fazla olan işlemlerde veri akışı sağlayan, ve performanslı okuma yazma işlemleri yapmamıza olanak sağlayan bir tip. Stream base type gelirler, FileStrem FileStreamReader, FileStremWriter, Metin dosyası işlemleri için StreamWriter StreamReader. UnManagement Resource olması sebebi ile using kod blogu kullanılması gerekir.
+  // 
+
+  public static void StreamReaderWriterSample()
+  {
+    try
+    {
+      // append dosyadakilerin üzerine yeni satıralar ekleyerek ilerlemeyi sağlar.
+      // dosya dizinde dosya olmasa dahil dosyayı oluşturup dosya üzerinden yazma işlemi yapabiliyor.
+      // IDisposable interfaceden implemente olduğundan dolayı yönetilemeyen bir kaynaktır bu sebeple using blogu içerisinde yazılmalıdır.
+      using (StreamWriter writer  = new StreamWriter("metinDosyasi.txt",append:false))
+      {
+        writer.WriteLine(" bu bir örnektir");
+        writer.WriteLine(" ikinci satır");
+
+        writer.Close(); // dosyayı kapptık.
+      }
+
+    }
+    catch (Exception)
+    {
+
+      throw;
+    }
+
+    using (StreamReader reader = new StreamReader("metinDosyasi.txt"))
+    {
+
+      string data = reader.ReadToEnd();
+
+      //while (reader.Read() > 0) // reader read edebilecek bir satırı varsa döngü devam eder.
+      //{
+      //  Console.WriteLine(" "  + reader.ReadLine());
+      //}
+
+      reader.Close(); // reader ile dosyanın kapatılmasını sağladık. Close yapmazsak ramde memory leak hataları meydana gelebilir. 
+    }
+  }
+
+  // bütün dosya formatları ile çalır. Metinsel ifade dışında binary Data olarak kullanır. PDF dosyası, Excel Dosyası, Bin uzantılı bir dosya
+  public static void FileStreamReaderWriterSample()
+  {
+
+    try
+    {
+      using (FileStream fileStream = new FileStream("binaryDosya.bin", FileMode.Create, FileAccess.Write))
+      {
+        byte[] data = new byte[] { 0x48, 0x65, 0x6c, 0x6c, 0x6f }; // hello
+
+        fileStream.Write(data, 0, data.Length);
+
+        fileStream.Close();
+      }
+    }
+    catch (Exception)
+    {
+
+      throw;
+    }
+
+
+    using (FileStream fileStream = new FileStream("binaryDosya.bin",FileMode.Open,FileAccess.Read))
+    {
+      byte[] buffer = new byte[1024]; // 1024 bytelık dosyayı okumak için tampon bir alan belirledim.
+
+      while (fileStream.Read(buffer,0, buffer.Length) > 0)
+      {
+        string data = Encoding.UTF8.GetString(buffer, 0, buffer.Length);
+        Console.WriteLine("Okunan bin dosyası :" + data);
+
+        fileStream.Close();
+      }
+    }
+  }
+
+  // Asp.Net Web API defaultda C# nesnelerini JSON veri formatına veya XML veri formatına serialize eder.
+  // Net Core 3.1 versiyonu ve sonrasında System.Text.JSON geldi. Net 5.0 sonrasıdaki tüm projelerde kullanımı kesinle öneriliyor.
+  // NewtonSoft.JSON bir paket kullanıyorduk.
+
+  // C# Object => JSONString => Serialize
+  // JSONString => C# Object => Deserialize işlemi yapıyoruz.
+
+  public static void SystemTextJsonSample()
+  {
+    var person = new Arthitect.Common.Person();
+
+    Console.WriteLine("Adınızı giriniz");
+    person.Name = Console.ReadLine();
+
+    Console.WriteLine("Soyadınızı giriniz");
+    person.SurName = Console.ReadLine();
+
+    var options = new JsonSerializerOptions
+    {
+      WriteIndented = true, // uzun json dosyalarının okunaklı olması için bu ayar true yapılır.
+      DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull, // defaultda null değerlerin ignore edilmesi
+      PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+      IgnoreReadOnlyFields = true // Class içerisinde read only alanları ignore eder serialize ve deserialize etmez.
+    };
+    // name, surname
+
+    string jsonString = System.Text.Json.JsonSerializer.Serialize(person, options);
+
+    Console.WriteLine("Serialize JSON" + jsonString);
+    var p2 = System.Text.Json.JsonSerializer.Deserialize<Arthitect.Common. Person>(jsonString, options);
+
+    Console.WriteLine("Deserialize" + p2.GetFullName());
+  }
+
+  public static void NewtonSoftJSONSample()
+  {
+    var p = new AdvancedCSharp03.Models.Person();
+
+    var opts = new JsonSerializerSettings
+    {
+      ContractResolver = new CamelCasePropertyNamesContractResolver(), // camelCase
+      DefaultValueHandling = DefaultValueHandling.Ignore, // default değerleri ignore et
+      NullValueHandling = NullValueHandling.Ignore, // Null değerler dışarı çıkmasın,
+      Formatting = Formatting.Indented, // Uzun json dosyalarında okunaklılığı artırmak için kullandılan bir özellik.
+      DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
+
+    };
+
+    Console.WriteLine("Adınızı giriniz");
+    p.Name = Console.ReadLine();
+    p.Age = 18; // değer verdik.
+    Console.WriteLine("Soyadınızı giriniz");
+    p.SurName = Console.ReadLine();
+
+    p.BirthDate = DateTime.Now.AddYears(-30);
+
+
+    string json = JsonConvert.SerializeObject(p, opts);
+
+    Console.WriteLine("NewtonsoftJSON " + json);
+
+    AdvancedCSharp03.Models.Person p2 = JsonConvert.DeserializeObject<AdvancedCSharp03.Models.Person>(json, opts);
+
+    Console.WriteLine("Deserialize " + p2.GetFullName());
+
+  }
+
+
+
 }
 
 
